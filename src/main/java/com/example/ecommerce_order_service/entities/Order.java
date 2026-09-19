@@ -4,6 +4,8 @@ import com.example.ecommerce_order_service.Enum.Status;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.Instant;
+
 @Entity
 @Data
 public class Order {
@@ -17,6 +19,10 @@ public class Order {
 
     private Status status = Status.PENDING;
 
+    @Column(nullable = false)
+    private Instant createdAt;
 
+    @Column(nullable = false)
+    private long totalAmount;
 
 }
