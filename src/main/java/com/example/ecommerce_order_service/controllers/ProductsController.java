@@ -6,7 +6,6 @@ import com.example.ecommerce_order_service.services.ProductService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
@@ -29,7 +28,7 @@ public class ProductsController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Product> getProduct(@PathVariable long id){
+    public Product getProduct(@PathVariable long id){
         return productService.getProduct(id);
     }
 

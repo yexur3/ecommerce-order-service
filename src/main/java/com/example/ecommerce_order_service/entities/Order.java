@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
+@Table(name = "orders")
 @Data
 public class Order {
 
@@ -24,7 +25,6 @@ public class Order {
     @Column(nullable = false)
     private Instant createdAt;
 
-    @Column(nullable = false)
     private BigDecimal totalAmount;
 
 }

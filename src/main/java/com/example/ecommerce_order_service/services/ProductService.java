@@ -6,6 +6,7 @@ import com.example.ecommerce_order_service.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -33,8 +34,9 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public Optional<Product> getProduct(long id){
-        return productRepository.findById(id);
+    public Product getProduct(long id){
+        return productRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Product not found: " + id));
     }
 
 }
