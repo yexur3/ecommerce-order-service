@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 public class Product {
@@ -16,7 +18,7 @@ public class Product {
     private String name;
 
     @Column(nullable = false)
-    private double price;
+    private BigDecimal price;
 
     @Column(nullable = false)
     private long stockQuantity;

@@ -4,6 +4,7 @@ import com.example.ecommerce_order_service.Enum.Status;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
@@ -17,12 +18,13 @@ public class Order {
     @Column(nullable = false)
     private long userId;
 
+    @Enumerated(EnumType.STRING)
     private Status status = Status.PENDING;
 
     @Column(nullable = false)
     private Instant createdAt;
 
     @Column(nullable = false)
-    private long totalAmount;
+    private BigDecimal totalAmount;
 
 }
