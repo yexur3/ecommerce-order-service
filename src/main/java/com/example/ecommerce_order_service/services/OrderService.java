@@ -2,6 +2,7 @@ package com.example.ecommerce_order_service.services;
 
 import com.example.ecommerce_order_service.dto.OrderItemRequest;
 import com.example.ecommerce_order_service.dto.OrderRequest;
+import com.example.ecommerce_order_service.dto.OrderResponse;
 import com.example.ecommerce_order_service.entities.Order;
 import com.example.ecommerce_order_service.entities.OrderItem;
 import com.example.ecommerce_order_service.entities.Product;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -62,6 +64,23 @@ public class OrderService {
         orderRepository.save(order);
 
         return order;
+    }
+
+    public OrderResponse getOrder(long id){
+        Order order = orderRepository.findById(id).orElseThrow(
+                () -> new NoSuchElementException("There is no order with this id: " + id)
+        );
+
+        OrderResponse orderResponse = new OrderResponse();
+
+        orderResponse.setId(order.getId());
+        orderResponse.setUserId(order.getUserId());
+        orderResponse.setStatus(order.getStatus());
+        orderResponse.setItems(orderItemRepository.findByOrderId(order.getId()));
+        orderResponse.setTotalAmount(order.getTotalAmount());
+        orderResponse.setCreatedAt(order.getCreatedAt());
+
+        return orderResponse;
     }
 
 }

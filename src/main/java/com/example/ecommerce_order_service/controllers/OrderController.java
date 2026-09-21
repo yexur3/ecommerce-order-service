@@ -1,12 +1,10 @@
 package com.example.ecommerce_order_service.controllers;
 
 import com.example.ecommerce_order_service.dto.OrderRequest;
+import com.example.ecommerce_order_service.dto.OrderResponse;
 import com.example.ecommerce_order_service.entities.Order;
 import com.example.ecommerce_order_service.services.OrderService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -23,6 +21,9 @@ public class OrderController {
         return orderService.createOrder(orderRequest);
     }
 
-
+    @GetMapping("/{id}")
+    public OrderResponse getOrder(@PathVariable long id){
+        return orderService.getOrder(id);
+    }
 
 }
