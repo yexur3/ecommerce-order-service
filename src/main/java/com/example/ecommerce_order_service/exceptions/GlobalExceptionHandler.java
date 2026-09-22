@@ -20,4 +20,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
+    @ExceptionHandler(InvalidOrderStateTransitionException.class)
+    public ResponseEntity<String> handleInvalidOrderStateTransition(InvalidOrderStateTransitionException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
 }

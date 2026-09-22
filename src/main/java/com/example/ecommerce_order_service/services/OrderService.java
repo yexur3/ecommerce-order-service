@@ -1,5 +1,6 @@
 package com.example.ecommerce_order_service.services;
 
+import com.example.ecommerce_order_service.Enum.Status;
 import com.example.ecommerce_order_service.dto.OrderItemRequest;
 import com.example.ecommerce_order_service.dto.OrderRequest;
 import com.example.ecommerce_order_service.dto.OrderResponse;
@@ -7,6 +8,7 @@ import com.example.ecommerce_order_service.entities.Order;
 import com.example.ecommerce_order_service.entities.OrderItem;
 import com.example.ecommerce_order_service.entities.Product;
 import com.example.ecommerce_order_service.exceptions.InsufficientStockException;
+import com.example.ecommerce_order_service.exceptions.InvalidOrderStateTransitionException;
 import com.example.ecommerce_order_service.repositories.OrderItemRepository;
 import com.example.ecommerce_order_service.repositories.OrderRepository;
 import com.example.ecommerce_order_service.repositories.ProductRepository;
@@ -91,6 +93,33 @@ public class OrderService {
         orderResponse.setCreatedAt(order.getCreatedAt());
 
         return orderResponse;
+    }
+
+    @Transactional
+    public Order changeStatus(long orderId, Status newStatus){
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NoSuchElementException("There is no order with this id: " + orderId));
+
+        if(!order.getStatus().canTransitionTo(newStatus)){
+            throw new InvalidOrderStateTransitionException("Cannot transition from " + order.getStatus() + " to " + newStatus);
+        }
+
+        if(newStatus.equals(Status.CANCELLED)){
+            List<OrderItem> items = orderItemRepository.findByOrderId(orderId);
+
+            for(var item : items){
+                Product product = productsRepository.findById(item.getProductId())
+                        .orElseThrow(() -> new NoSuchElementException("There is no product with this id: " + item.getProductId()));
+
+                product.setStockQuantity(product.getStockQuantity() + item.getQuantity());
+
+                productsRepository.save(product);
+            }
+
+        }
+
+        order.setStatus(newStatus);
+        return orderRepository.save(order);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.ecommerce_order_service.controllers;
 
+import com.example.ecommerce_order_service.dto.NewStatusRequest;
 import com.example.ecommerce_order_service.dto.OrderRequest;
 import com.example.ecommerce_order_service.dto.OrderResponse;
 import com.example.ecommerce_order_service.entities.Order;
@@ -24,6 +25,11 @@ public class OrderController {
     @GetMapping("/{id}")
     public OrderResponse getOrder(@PathVariable long id){
         return orderService.getOrder(id);
+    }
+
+    @PutMapping("/{id}/status")
+    public Order changeStatus(@PathVariable long id, @RequestBody NewStatusRequest statusRequest){
+        return orderService.changeStatus(id, statusRequest.getStatus());
     }
 
 }
