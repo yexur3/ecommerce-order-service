@@ -6,10 +6,12 @@ import com.example.ecommerce_order_service.dto.OrderResponse;
 import com.example.ecommerce_order_service.entities.Order;
 import com.example.ecommerce_order_service.entities.OrderItem;
 import com.example.ecommerce_order_service.entities.Product;
+import com.example.ecommerce_order_service.exceptions.InsufficientStockException;
 import com.example.ecommerce_order_service.repositories.OrderItemRepository;
 import com.example.ecommerce_order_service.repositories.OrderRepository;
 import com.example.ecommerce_order_service.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -30,6 +32,7 @@ public class OrderService {
         this.orderItemRepository = orderItemRepository;
     }
 
+    @Transactional
     public Order createOrder(OrderRequest orderRequest){
         Order order = new Order();
 
@@ -47,6 +50,13 @@ public class OrderService {
             Product product = productsRepository.findById(item.getProductId()).orElseThrow(
                     () -> new NoSuchElementException("There is no product with: " + item.getProductId())
             );
+
+            if(product.getStockQuantity() < item.getQuantity()){
+                throw new InsufficientStockException("Out of stock. Available: " + product.getStockQuantity() + ", Wanted: " + item.getQuantity());
+            } else {
+                product.setStockQuantity(product.getStockQuantity() - item.getQuantity());
+                productsRepository.save(product);
+            }
 
             orderItem.setOrderId(order.getId());
             orderItem.setProductId(item.getProductId());
