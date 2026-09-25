@@ -1,6 +1,6 @@
 package com.example.ecommerce_order_service.Enum;
 
-public enum Status {
+public enum  Status {
     PENDING,
     PAID,
     SHIPPED,
