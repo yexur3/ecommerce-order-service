@@ -9,9 +9,11 @@ import com.example.ecommerce_order_service.entities.OrderItem;
 import com.example.ecommerce_order_service.entities.Product;
 import com.example.ecommerce_order_service.exceptions.InsufficientStockException;
 import com.example.ecommerce_order_service.exceptions.InvalidOrderStateTransitionException;
+import com.example.ecommerce_order_service.exceptions.ProductConflictException;
 import com.example.ecommerce_order_service.repositories.OrderItemRepository;
 import com.example.ecommerce_order_service.repositories.OrderRepository;
 import com.example.ecommerce_order_service.repositories.ProductRepository;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,7 +59,12 @@ public class OrderService {
                 throw new InsufficientStockException("Out of stock. Available: " + product.getStockQuantity() + ", Wanted: " + item.getQuantity());
             } else {
                 product.setStockQuantity(product.getStockQuantity() - item.getQuantity());
-                productsRepository.save(product);
+                try {
+                    productsRepository.save(product);
+                } catch (ObjectOptimisticLockingFailureException ex){
+                    throw new ProductConflictException("This product just bought someone, try again.");
+                }
+
             }
 
             orderItem.setOrderId(order.getId());

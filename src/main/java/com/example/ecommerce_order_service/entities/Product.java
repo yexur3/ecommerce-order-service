@@ -23,4 +23,7 @@ public class Product {
     @Column(nullable = false)
     private long stockQuantity;
 
+    @Version
+    private long version;
+
 }
