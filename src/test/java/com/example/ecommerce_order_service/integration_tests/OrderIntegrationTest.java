@@ -4,6 +4,7 @@ import com.example.ecommerce_order_service.Enum.Status;
 import com.example.ecommerce_order_service.dto.OrderItemRequest;
 import com.example.ecommerce_order_service.dto.OrderRequest;
 import com.example.ecommerce_order_service.entities.Order;
+import com.example.ecommerce_order_service.entities.OrderItem;
 import com.example.ecommerce_order_service.entities.Product;
 import com.example.ecommerce_order_service.exceptions.InsufficientStockException;
 import com.example.ecommerce_order_service.repositories.ProductRepository;
@@ -19,6 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -101,6 +103,32 @@ public class OrderIntegrationTest {
         assertThrows(InsufficientStockException.class, () -> {
             orderService.createOrder(orderRequest);
         });
+    }
+
+    @Test
+    void testChangeStatusInCancelled() {
+        Product product = new Product();
+        product.setName("apple");
+        product.setPrice(BigDecimal.valueOf(18.99));
+        product.setStockQuantity(10);
+
+        productRepository.save(product);
+
+        OrderItemRequest orderItemRequest = new OrderItemRequest();
+        orderItemRequest.setProductId(product.getId());
+        orderItemRequest.setQuantity(3);
+
+        OrderRequest orderRequest = new OrderRequest();
+        orderRequest.setUserId(1L);
+        orderRequest.setItems(List.of(orderItemRequest));
+
+        Order order = orderService.createOrder(orderRequest);
+
+        orderService.changeStatus(order.getId(), Status.CANCELLED);
+
+        Product res = productRepository.findById(product.getId()).orElseThrow();
+
+        assertEquals(10, res.getStockQuantity());
     }
 
 }
